@@ -130,44 +130,52 @@ $factura = [
         <div class="table_productos">
             <table cellpadding="5" cellspacing="0">
                 <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Código</th>
-                    <th>Descripción</th>
-                    <th>Unidad</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                    <th>Importe Bruto</th>
-                    <th>Descuento</th>
-                    <th>Importe Neto</th>
-                    <th>Tributo</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($factura['items'] as $i => $item): ?>
-                <?php
-                $importeBruto = $item['cantidad'] * $item['precioUnitario'];
-                $descuentoTotal = $item['cantidad'] * $item['descuento'];
-                $importeNeto = $importeBruto - $descuentoTotal;
-                ?>
-                <tr>
-                    <td><?= $i + 1 ?></td>
-                    <td><?= $item['codigo'] ?></td>
-                    <td><?= $item['descripcion'] ?></td>
-                    <td><?= $item['unidad'] ?></td>
-                    <td><?= $item['cantidad'] ?></td>
-                    <td><?= number_format($item['precioUnitario'], 2) ?></td>
-                    <td><?= number_format($importeBruto, 2) ?></td>
-                    <td><?= number_format($descuentoTotal, 2) ?></td>
-                    <td><?= number_format($importeNeto, 2) ?></td>
-                    <td><?= $item['tipoTributo'] ?></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
+                    <tr>
+                        <th>#</th>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Unidad</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Importe Bruto</th>
+                        <th>Descuento</th>
+                        <th>Importe Neto</th>
+                        <th>Tributo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($factura['items'] as $i => $item): ?>
+                        <?php
+                        $importeBruto = $item['cantidad'] * $item['precioUnitario'];
+                        $descuentoTotal = $item['cantidad'] * $item['descuento'];
+                        $importeNeto = $importeBruto - $descuentoTotal;
+                        ?>
+                        <tr>
+                            <td><?= $i + 1 ?></td>
+                            <td><?= $item['codigo'] ?></td>
+                            <td><?= $item['descripcion'] ?></td>
+                            <td><?= $item['unidad'] ?></td>
+                            <td><?= $item['cantidad'] ?></td>
+                            <td><?= number_format($item['precioUnitario'], 2) ?></td>
+                            <td><?= number_format($importeBruto, 2) ?></td>
+                            <td><?= number_format($descuentoTotal, 2) ?></td>
+                            <td><?= number_format($importeNeto, 2) ?></td>
+                            <td><?= $item['tipoTributo'] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
             </table>
         </div>
         <div class="totales">
+            <?php $matriz = [[1, 2, 3], [4, 5, 6]];
+            foreach ($matriz as $fila): ?>
 
+                <?php foreach ($fila as $value): ?>
+                    <?php echo"";?>
+
+                <?php endforeach; ?>
+
+            <?php endforeach; ?>
         </div>
     </div>
 </body>
