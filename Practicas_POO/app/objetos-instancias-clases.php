@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 
 class Perro{
     public $raza;
@@ -17,8 +17,4 @@ class Pitbull extends Perro{
 }
 
 
-$nw = new Pitbull();
-
-$nw->ladrar("el mambo de la banda");
-
-?>
+?> -->
