@@ -1,0 +1,215 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Termostato (RN vs RP) validado</title>
+<style>
+  body{font-family:system-ui,Arial,sans-serif;margin:16px}
+  fieldset{border:1px solid #ccc;padding:10px}
+  label{margin-right:12px}
+  input[type=number]{width:72px}
+  canvas{border:1px solid #ddd;width:100%;max-width:900px;height:260px;display:block;margin-top:10px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0}
+  .small{font-size:12px;color:#555}
+  #estado{margin-top:8px;font-weight:600}
+</style>
+
+<h1>Termostato</h1>
+
+<fieldset>
+  <div class="row">
+    <label><input type="radio" name="modo" value="RN" checked> RN</label>
+    <label><input type="radio" name="modo" value="RP"> RP</label>
+    <label>objetivo: <input id="sp" type="number" value="22" step="0.5"></label>
+    <label>temp inicial: <input id="t0" type="number" value="18" step="0.5"></label>
+    <label>k: <input id="k" type="number" value="0.6" step="0.05" min="0" max="2"></label>
+    <label>b: <input id="b" type="number" value="0.05" step="0.01" min="0" max="0.3"></label>
+    <label>amb: <input id="amb" type="number" value="18" step="0.5"></label>
+    <label><input id="cut" type="checkbox"> interrumpir lazo</label>
+  </div>
+  <div class="row">
+    <button id="start">iniciar</button>
+    <button id="pause">pausar</button>
+    <button id="step">un paso</button>
+    <button id="reset">reset</button>
+    <button id="pulse">pulso +2 C</button>
+  </div>
+  <div class="row small">
+    <span id="stats">modo: RN | temp: 18.0 C | error: 4.0 C</span>
+  </div>
+  <div id="estado">estado: listo</div>
+</fieldset>
+
+<canvas id="chart" width="1000" height="260"></canvas>
+
+<script>
+  // parametros basicos
+  let a = 0.35;                // efecto del actuador
+  let sp = 22, temp = 18, k = 0.6, b = 0.05, amb = 18;
+  let modo = "RN", cortar = false, running = false, t = 0;
+
+  // validacion y limites
+  const TEMP_MIN = 0, TEMP_MAX = 80;      // rango fisico razonable
+  const ERR_MAX  = 20;                    // limitar error absoluto
+  const E_MAX    = 5;                     // saturacion del actuador
+  const PASO_MAX = 1.5;                   // cambio maximo por paso
+
+  // series
+  const TMAX = 400;
+  const xs=[], ys=[], os=[];
+  const cvs = document.getElementById('chart');
+  const ctx = cvs.getContext('2d');
+  const stats = document.getElementById('stats');
+  const estado = document.getElementById('estado');
+
+  // historial para diagnostico simple
+  const histErr = [];      // ultimos errores
+  const NERR = 20;         // ventana para evaluar tendencia
+
+  // ui
+  document.querySelectorAll('input[name=modo]').forEach(r=>{
+    r.addEventListener('change',()=>{ modo = r.value; draw(); });
+  });
+  const elSp  = document.getElementById('sp');
+  const elT0  = document.getElementById('t0');
+  const elK   = document.getElementById('k');
+  const elB   = document.getElementById('b');
+  const elAmb = document.getElementById('amb');
+  const elCut = document.getElementById('cut');
+
+  elSp.oninput  = ()=>{ sp  = clamp(parseFloat(elSp.value), TEMP_MIN, TEMP_MAX); };
+  elK.oninput   = ()=>{ k   = clamp(parseFloat(elK.value), 0, 2); };
+  elB.oninput   = ()=>{ b   = clamp(parseFloat(elB.value), 0, 0.3); };
+  elAmb.oninput = ()=>{ amb = clamp(parseFloat(elAmb.value), TEMP_MIN, TEMP_MAX); };
+  elCut.onchange= ()=>{ cortar = elCut.checked; };
+
+  document.getElementById('start').onclick = ()=>{ if(!running){ running=true; loop(); } };
+  document.getElementById('pause').onclick = ()=> running=false;
+  document.getElementById('step').onclick  = ()=>{ step(); draw(); };
+  document.getElementById('reset').onclick = resetAll;
+  document.getElementById('pulse').onclick = ()=>{ temp = clamp(temp + 2, TEMP_MIN, TEMP_MAX); draw(); };
+
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function sign(x){ return x<0?-1:x>0?1:0; }
+
+  function resetAll(){
+    running = false;
+    t = 0;
+    sp  = clamp(parseFloat(elSp.value),  TEMP_MIN, TEMP_MAX);
+    temp= clamp(parseFloat(elT0.value),  TEMP_MIN, TEMP_MAX);
+    k   = clamp(parseFloat(elK.value),   0, 2);
+    b   = clamp(parseFloat(elB.value),   0, 0.3);
+    amb = clamp(parseFloat(elAmb.value), TEMP_MIN, TEMP_MAX);
+    xs.length=0; ys.length=0; os.length=0; histErr.length=0;
+    pushPoint(); draw();
+  }
+
+  function pushPoint(){
+    if(xs.length > TMAX){ xs.shift(); ys.shift(); os.shift(); }
+    xs.push(t); ys.push(temp); os.push(sp);
+  }
+
+  function control(err){
+    if(cortar) return 0;
+    const s = (modo === "RN") ? +1 : -1;
+    // limitar error y control
+    const eLim = clamp(err, -ERR_MAX, ERR_MAX);
+    const E = s * k * eLim;
+    return clamp(E, -E_MAX, E_MAX);
+  }
+
+  function step(){
+    const err = sp - temp;
+    const E = control(err);
+
+    // dinamica con limite de paso para evitar saltos
+    let next = temp + a*E - b*(temp - amb);
+    let delta = next - temp;
+    if (Math.abs(delta) > PASO_MAX) {
+      delta = PASO_MAX * sign(delta);
+      next = temp + delta;
+    }
+
+    temp = clamp(next, TEMP_MIN, TEMP_MAX);
+    t++;
+
+    // guardar series
+    pushPoint();
+
+    // actualizar historial de error
+    histErr.push(err);
+    if(histErr.length > NERR) histErr.shift();
+  }
+
+  function loop(){
+    if(!running) return;
+    step(); step();  // dos pasos por frame
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  function diagnostico(){
+    if(cortar) return "lazo interrumpido";
+
+    if(histErr.length < 6) {
+      // poco historial, usa vecindad
+      const e = sp - temp;
+      if (Math.abs(e) < 0.5) return "cerca del objetivo";
+      return "calculando...";
+    }
+
+    // metrica simple: tendencia del error y cambios de signo (oscilacion)
+    const eNow = histErr[histErr.length-1];
+    const eOld = histErr[0];
+    const tendencia = eNow - eOld;             // >0 alejandose, <0 corrigiendo
+    let cambios = 0;
+    for(let i=1;i<histErr.length;i++){
+      const s1 = sign(histErr[i-1]);
+      const s2 = sign(histErr[i]);
+      if(s1*s2 < 0) cambios++;
+    }
+
+    if (Math.abs(eNow) < 0.5) return "cerca del objetivo";
+    if (cambios >= 3 && Math.abs(tendencia) < 1.0) return "esta oscilando";
+    if (tendencia < -0.5) return "esta corrigiendo";
+    if (tendencia > 0.5)  return "se esta alejando";
+    return "estable lento";
+  }
+
+  function draw(){
+    // texto simple
+    const err = sp - temp;
+    stats.textContent = `modo: ${modo} | temp: ${temp.toFixed(1)} C | error: ${err.toFixed(1)} C`;
+    estado.textContent = "estado: " + diagnostico();
+
+    // ejes y graficas
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    const m={l:44,r:8,t:8,b:22}, W=cvs.width, H=cvs.height, w=W-m.l-m.r, h=H-m.t-m.b;
+    const tmin = xs[0] ?? 0, tmax = xs[xs.length-1] ?? 1;
+    const ymin = Math.min(...ys.concat(os, [temp])) - 2;
+    const ymax = Math.max(...ys.concat(os, [temp])) + 2;
+    const X = i => m.l + w * ((xs[i]-tmin)/Math.max(1, tmax-tmin));
+    const Y = v => m.t + h - h * ((v - ymin)/Math.max(1e-6, ymax - ymin));
+
+    // rejilla y labels Y
+    ctx.strokeStyle = "#eee"; ctx.fillStyle="#555"; ctx.font="12px system-ui,Arial";
+    for(let g=Math.ceil(ymin); g<=Math.floor(ymax); g+=2){
+      ctx.beginPath(); ctx.moveTo(m.l, Y(g)); ctx.lineTo(m.l+w, Y(g)); ctx.stroke();
+      ctx.fillText(g.toFixed(0), 6, Y(g)+4);
+    }
+
+    // setpoint (naranja)
+    if(os.length>1){
+      ctx.strokeStyle="#f4a261"; ctx.beginPath();
+      for(let i=0;i<os.length;i++){ const x=X(i), y=Y(os[i]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+      ctx.stroke();
+    }
+    // temperatura (azul)
+    if(ys.length>1){
+      ctx.strokeStyle="#265ad9"; ctx.beginPath();
+      for(let i=0;i<ys.length;i++){ const x=X(i), y=Y(ys[i]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+      ctx.stroke();
+    }
+  }
+
+  // init
+  resetAll();
+</script>

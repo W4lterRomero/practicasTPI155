@@ -1,0 +1,10 @@
+Options -MultiViews
+RewriteEngine On
+
+# Si no es un archivo real
+RewriteCond %{REQUEST_FILENAME} !-f
+# Si no es un directorio real
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirigir todo a index.php
+RewriteRule ^ index.php [QSA,L]

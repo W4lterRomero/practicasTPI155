@@ -108,21 +108,21 @@ $factura = [
                 <div class="dataPrincipal_Emisor">
                     <?php
                     foreach ($factura['receptor'] as $key => $value): ?>
-                        <p><strong><?= ucfirst($key) ?>:</strong> <?= $value ?></p>
+                        <p><strong><?= ucfirst($key) ?> :</strong> <?= $value ?></p>
                     <?php endforeach; ?>
                 </div>
                 <div class="dataPrincipal_Receptor">
                     <?php
                     foreach ($factura['emisor'] as $key => $value): ?>
 
-                        <p><strong><?= ucfirst($key) ?>:</strong> <?= $value ?></p>
+                        <p><strong> <?=  ucfirst($key) ?>: </strong>  <?= $value ?></p>
                     <?php endforeach; ?>
                 </div>
             </div>
             <div class="data_producto">
                 <div class="encabezado">
                     <?php foreach ($factura['encabezado'] as $key => $value): ?>
-                        <p><strong><?= ucfirst($key) ?>:</strong> <?= $value ?></p>
+                        <p><strong> <?=  ucfirst($key) ?> :</strong>  <?= $value  ?></p>
                     <?php endforeach; ?>
                 </div>
             </div>
