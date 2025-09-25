@@ -1,0 +1,16 @@
+# Script para desconfigurar credenciales de Git/GitHub en la PC
+
+# Elimina las credenciales almacenadas globalmente
+git config --global --unset user.name
+git config --global --unset user.email
+git config --global --unset credential.helper
+
+# Opcional: elimina el archivo de configuración global de git
+# (Descomenta la siguiente línea si quieres borrar toda la configuración global)
+ del /F /Q "%USERPROFILE%\.gitconfig"
+
+# Opcional: elimina las credenciales almacenadas en el administrador de credenciales de Windows
+# (Esto requiere que el helper sea 'manager' o 'wincred')
+
+echo Credenciales de Git/GitHub desconfiguradas.
+pause
