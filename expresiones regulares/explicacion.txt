@@ -1,0 +1,11 @@
+aquí lo que estoy haciendo es viendo si el parametro
+es un array
+en estos casos la ruta la nomas que me retorne un doble string
+podamos controlar que si me retorna un objeto o un arreglo
+primero verificamos el objeto para que pueda buscar en una base de datos
+estamos haciendo que podamos capturar ese objeto y retornarlo como un jSON
+cuando estamos haciendo una API
+la API
+
+para acceder al arreglo:
+public/inicio/hola
