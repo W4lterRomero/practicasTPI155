@@ -17,6 +17,9 @@ class Carro {
     function get_motor() {
         return $this->motor;
     }
+    function prueba(){
+        return "LALALALALLA";
+    }
 }
 
 // Crear un objeto
