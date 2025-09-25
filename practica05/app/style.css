@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 body {
     background-color: #f7f5fa;
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -106,3 +107,106 @@ section {
     margin-bottom: 25px;
     box-shadow: 0 1px 4px rgba(160,140,209,0.10);
 }
+=======
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(120deg, #f8fafc 0%, #e2e8f0 100%);
+    color: #222;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Container utility */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #2d3748;
+    margin-bottom: 0.8em;
+    font-weight: 600;
+}
+
+/* Links */
+a {
+    color: #3182ce;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+a:hover {
+    color: #2b6cb0;
+    text-decoration: underline;
+}
+
+/* Buttons */
+button, .btn {
+    background: #3182ce;
+    color: #fff;
+    border: none;
+    padding: 0.6em 1.2em;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
+}
+button:hover, .btn:hover {
+    background: #2b6cb0;
+}
+
+/* Forms */
+input, textarea, select {
+    width: 100%;
+    padding: 0.5em;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    margin-bottom: 1em;
+    font-size: 1em;
+    background: #f1f5f9;
+    transition: border 0.2s;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: #3182ce;
+    outline: none;
+}
+
+/* Cards */
+.card {
+    background: #f9fafb;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 1.5em;
+    margin-bottom: 2em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 12px;
+    }
+    h1 {
+        font-size: 2em;
+    }
+}
+
+/* Utility classes */
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+.p-2 { padding: 2em; }
+.rounded { border-radius: 12px; }
+.shadow { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+>>>>>>> ac7b7269d8b266142805f6ae847749b4f96564e5
