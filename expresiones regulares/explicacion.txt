@@ -9,3 +9,20 @@ la API
 
 para acceder al arreglo:
 public/inicio/hola
+
+Para borrar tus credenciales de Git/GitHub de la PC actual, puedes hacer lo siguiente:
+
+1. Abre una terminal o símbolo del sistema.
+2. Ejecuta el siguiente comando para eliminar las credenciales almacenadas en caché:
+    git credential-cache exit
+
+3. Si usas el administrador de credenciales de Windows, abre el "Administrador de credenciales" desde el Panel de control y elimina las entradas relacionadas con "git" o "github".
+
+4. También puedes eliminar el archivo de configuración global de Git donde pueden estar guardados tu usuario y correo:
+    git config --global --unset user.name
+    git config --global --unset user.email
+
+Con esto, tus credenciales quedarán borradas de la PC.
+
+
+el metodo view o que hace es que verifica si relamente existe esa vista
