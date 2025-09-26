@@ -1,1 +1,2 @@
 docker compose up -d --build #Sirve para levantar todos los archivos 
+docker compuse -up
