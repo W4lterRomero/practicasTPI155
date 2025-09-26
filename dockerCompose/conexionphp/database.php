@@ -24,8 +24,18 @@
 }
 
 $database = new Database();
-$database->getConnection();
+$contenTemporal = $database->getConnection();
+$nombre = "BryAN";
+$direccion = "MOrazÀN";
+$edad = 25;
+$statement = $contenTemporal->prepare("INSERT INTO tbl_persona(nombre,direccion,edad) VALUES (?,?,?)");
+$statement->bindParam(1,$nombre);
+$statement->bindParam(2,$direccion);
+$statement->bindParam(3, $edad);
 
-
+$statement->execute();
+//Este ejercicio tienes que replicarlo pero con un formulario
+//Hacerlo tambien a traves de un array
+$statement->execute();
 
 ?>
