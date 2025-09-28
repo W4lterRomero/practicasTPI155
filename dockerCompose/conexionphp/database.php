@@ -23,6 +23,8 @@
     }
 }
 
+#funcion para crear la conexión de la base de datos, so docker es bastante interesante e importante
+#nota: hacer mi propia imagen de docker para descargarla cuando la necesite
 $database = new Database();
 $contenTemporal = $database->getConnection();
 $nombre = "BryAN";
