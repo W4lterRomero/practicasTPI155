@@ -5,7 +5,7 @@ namespace app\controller;
 class HomeController {
     
     public function index(){
-        echo $this->view("HomeView",['title'=>'MiVista']);
+        echo $this->view("HomeView", ['title'=>'MiVista']);
     }
 
     // Simple view method implementation
@@ -21,6 +21,6 @@ class HomeController {
         }
     }
     
+    
 }
-
 ?>
