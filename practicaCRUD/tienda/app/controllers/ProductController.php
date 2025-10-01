@@ -57,6 +57,44 @@ class ProductController{
             exit();
         }
     }
+    // Mostrar formulario de edición
+    public function edit($id) {
+        $productModel = new Product();
+        $product = $productModel->getById($id);
+        
+        if ($product) {
+            View::show('products/edit', [
+                'product' => $product,
+                'title' => 'Editar Producto'
+            ]);
+        } else {
+            header('Location: /products?error=not_found');
+            exit();
+        }
+    }
+    
+    // Actualizar producto
+    public function update($id) {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $productModel = new Product();
+            
+            $data = [
+                'nombre' => $_POST['nombre'] ?? '',
+                'descripcion' => $_POST['descripcion'] ?? '',
+                'precio' => $_POST['precio'] ?? 0,
+                'stock' => $_POST['stock'] ?? 0,
+                'categoria' => $_POST['categoria'] ?? ''
+            ];
+            
+            if ($productModel->update($id, $data)) {
+                header('Location: /products?success=updated');
+                exit();
+            } else {
+                header('Location: /products/' . $id . '/edit?error=update_failed');
+                exit();
+            }
+        }
+    }
 
 
 }

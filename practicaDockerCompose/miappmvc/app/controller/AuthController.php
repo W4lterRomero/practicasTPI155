@@ -39,6 +39,28 @@ class AuthController {
         }
         
     }
+    
+    public function dashboard(){
+        session_start();
+        if(!isset($_SESSION['user_id'])){
+            header('Location: /login');
+            exit();
+        }
+        
+        echo $this->renderView("dashboard", [
+            'username' => $_SESSION['username'],
+            'user_id' => $_SESSION['user_id'],
+            'login_time' => date('Y-m-d H:i:s')
+        ]);
+    }
+    
+    public function logout(){
+        session_start();
+        session_destroy();
+        header('Location: /login');
+        exit();
+    }
+    
     public function renderView($viewName, $data = []){
         extract($data);
         $viewPath = __DIR__ . "/../views/{$viewName}.php";

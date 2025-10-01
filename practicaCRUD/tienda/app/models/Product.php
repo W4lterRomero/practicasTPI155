@@ -96,4 +96,26 @@ class Product{
             return [];
         }
     }
+    // Actualizar producto
+    public function update($id, $data) {
+        try {
+            $query = "UPDATE {$this->table} 
+                      SET nombre = :nombre, descripcion = :descripcion, precio = :precio, 
+                          stock = :stock, categoria = :categoria, updated_at = NOW()
+                      WHERE id = :id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+            $stmt->bindParam(':nombre', $data['nombre']);
+            $stmt->bindParam(':descripcion', $data['descripcion']);
+            $stmt->bindParam(':precio', $data['precio']);
+            $stmt->bindParam(':stock', $data['stock']);
+            $stmt->bindParam(':categoria', $data['categoria']);
+            
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            error_log("Error al actualizar producto: " . $e->getMessage());
+            return false;
+        }
+    }
 }
