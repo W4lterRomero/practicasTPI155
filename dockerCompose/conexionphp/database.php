@@ -30,14 +30,32 @@ $contenTemporal = $database->getConnection();
 $nombre = "BryAN";
 $direccion = "MOrazÀN";
 $edad = 25;
-$statement = $contenTemporal->prepare("INSERT INTO tbl_persona(nombre,direccion,edad) VALUES (?,?,?)");
-$statement->bindParam(1,$nombre);
+ $statement = $contenTemporal->prepare("INSERT INTO tbl_persona(nombre,direccion,edad) VALUES (?,?,?)");
+/*$statement->bindParam(1,$nombre);
 $statement->bindParam(2,$direccion);
 $statement->bindParam(3, $edad);
-
-$statement->execute();
+ */
+/* $statement = $contenTemporal->prepare("INSERT INTO tbl_persona(nombre,direccion,edad) VALUES (:nombre,:direccion,:edad)");
+$statement->bindParam(":nombre",$nombre);
+$statement->bindParam(":direccion",$direccion);
+$statement->bindParam(":edad", $edad);
+ */
+/* $data =$statement->execute(array(":nombre" => $nombre, ":direccion" => $direccion, ":edad" =>$edad)); 
+if($data){
+    echo "INSERTADO";
+}; */
 //Este ejercicio tienes que replicarlo pero con un formulario
 //Hacerlo tambien a traves de un array
+
+$persona_obj = new Persona();
+/* $persona_obj->nombre = "Gerson";
+$persona_obj->direccion = "San Miguel";
+$persona_obj->edad = 40;
+
+if($statement->execute((array)$persona_obj)){
+    echo "INSERTADO";
+}
+ */
 $statement->execute();
 
 ?>
